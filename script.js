@@ -34,13 +34,9 @@ const songs = [
     },
 ];
 
-// Current song
 let songIndex = 0;
-
-// Check if playing
 let isPlaying = false;
 
-// Play
 function playSong() {
     isPlaying = true;
     playBtn.classList.replace('fa-play', 'fa-pause');
@@ -48,7 +44,6 @@ function playSong() {
     music.play();
 }
 
-// Pause
 function pauseSong() {
     isPlaying = false;
     playBtn.classList.replace('fa-pause', 'fa-play');
@@ -56,7 +51,6 @@ function pauseSong() {
     music.pause();
 }
 
-// Previous Song
 function prevSong() {
     songIndex--;
     if (songIndex < 0) {
@@ -66,7 +60,6 @@ function prevSong() {
     playSong();
 }
 
-// Next Song
 function nextSong() {
     songIndex++;
     if (songIndex > songs.length - 1) {
@@ -76,7 +69,6 @@ function nextSong() {
     playSong();
 }
 
-// Update Progress Bar & Time
 function updateProgressBar(e) {
     const { duration, currentTime } = e.srcElement;
     if (isPlaying) {
@@ -86,17 +78,22 @@ function updateProgressBar(e) {
     // Calculate display for duration
     const durationMinutes = Math.floor(duration / 60);
     const durationSeconds = Math.floor(duration % 60).toString().padStart(2, '0');
-    // Delay switching duration Element to avoid NaN
     if (durationSeconds !== 'NaN') {
         durationEl.textContent = `${durationMinutes}:${durationSeconds}`;
     }
     // Calculate display for currentTime
     const currentTimeMinutes = Math.floor(currentTime / 60);
     const currentTimeSeconds = Math.floor(currentTime % 60).toString().padStart(2, '0');
-    // Delay switching duration Element to avoid NaN
     if (currentTimeSeconds !== 'NaN') {
         currentTimeEl.textContent = `${currentTimeMinutes}:${currentTimeSeconds}`;
     }
+}
+
+function setProgressBar(e) {
+    const width = this.clientWidth;
+    const clickX = e.offsetX;
+    const { duration } = music;
+    music.currentTime = (clickX / width) * duration;
 }
 
 // Event Listeners
@@ -104,6 +101,8 @@ playBtn.addEventListener('click', () => (isPlaying ? pauseSong() : playSong()));
 prevBtn.addEventListener('click', () => prevSong());
 nextBtn.addEventListener('click', () => nextSong());
 music.addEventListener('timeupdate', updateProgressBar);
+music.addEventListener('ended', nextSong);
+progressContainer.addEventListener('click', setProgressBar);
 
 
 // Update DOM
